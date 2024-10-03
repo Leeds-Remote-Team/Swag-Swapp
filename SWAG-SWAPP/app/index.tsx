@@ -12,7 +12,13 @@ export default function Index() {
 
     >
       <Text>Edit app/index.tsx to edit this screen.</Text>
+
+      <Link href="/user/userSignup"> Signup </Link>
+      <Link href="/user/userLogin"> Login </Link>
+      <Link href="/clothes/clothes_item"> Clothes Detail </Link>
+
       <Link href="/Dashboard"> Dashboard </Link>
+
     </View>
 
     ></View>
