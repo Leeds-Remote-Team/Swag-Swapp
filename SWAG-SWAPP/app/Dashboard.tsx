@@ -10,6 +10,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { Header } from "./Header";
 import { ClothesCard } from "./ClothesCard";
+import { Link } from "expo-router";
 
 const Dashboard = () => {
   // const mostWornClothes = *some logic*
@@ -27,7 +28,9 @@ const Dashboard = () => {
       </ScrollView>
       <View style={styles.add}>
         <TouchableOpacity>
-          <Icon name="add" size={50} />
+          <Link href="/camera/camera">
+            <Icon name="add" size={50} />
+          </Link>
         </TouchableOpacity>
       </View>
     </View>
