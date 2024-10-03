@@ -25,7 +25,7 @@ export default function userLogin() {
       return;
     }
 
-    Alert.alert("Success!", "You've created your account!");
+    // Alert.alert("Success!", "You've created your account!");
     console.log("Success");
     // return <Redirect href="/Dashboard" />;
     router.push("/Dashboard");

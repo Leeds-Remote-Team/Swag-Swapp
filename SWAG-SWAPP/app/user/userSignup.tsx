@@ -10,12 +10,15 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function userSignup() {
   const [firstNameText, setFirstNameText] = useState("");
   const [lastNameText, setLastNameText] = useState("");
   const [userNameText, setUserNameText] = useState("");
   const [passwordText, setPasswordText] = useState("");
+
+  const router = useRouter();
 
   const handleSignup = () => {
     if (!firstNameText || !lastNameText || !userNameText || !passwordText) {
@@ -24,8 +27,9 @@ export default function userSignup() {
       return;
     }
 
-    Alert.alert("Success!", "You've created your account!");
+    // Alert.alert("Success!", "You've created your account!");
     console.log("Success");
+    router.push("/Dashboard");
   };
 
   console.log(firstNameText, lastNameText, userNameText, passwordText);
