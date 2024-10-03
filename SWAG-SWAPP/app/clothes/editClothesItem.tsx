@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { Header } from "../Header";
 import axios from "axios";
@@ -67,10 +68,11 @@ const editClothesItem = () => {
 
     axios
       .patch(
-        `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`,
+        `https://swagswapp-api.onrender.com/api/clothes/${userAccount.user_id}/3`,
         newDetails
       )
       .then((response) => {
+        console.log(response.data, "submit responds");
         // setClotheItem((prevState) => ({
         //   ...prevState,
         //   top_category: newDetails.top_category,
@@ -103,50 +105,67 @@ const editClothesItem = () => {
     );
   }
 
+  console.log(clotheItem, "hhhh");
+
   return (
     <View style={styles.container}>
-      <Header />
-      <Text style={styles.name}>Editing Details</Text>
-      <Image
-        style={styles.image}
-        source={{
-          uri: clotheItem.image_url || "Image unavialble",
-        }}
-      />
-      <View style={styles.tagContainer}>
+      <ScrollView>
+        <Header />
+        <Text style={styles.name}>Editing Details</Text>
+        <Image
+          style={styles.image}
+          source={{
+            uri: clotheItem.img_url || "Image unavialble",
+          }}
+        />
+        <View style={styles.tagContainer}>
+          <Text style={styles.descriptionLabel}>Description:</Text>
+        </View>
         <Text style={styles.descriptionLabel}>Description:</Text>
-      </View>
-      <Text style={styles.descriptionLabel}>Description:</Text>
-      <Text style={styles.descriptionText}>
-        This is a short description of the item.
-      </Text>
-      <TextInput
-        style={styles.descriptionText}
-        placeholder={clotheItem.top_category}
-        value={top_category}
-        onChangeText={setTopCategory}
-      />
-      <TextInput
-        style={styles.descriptionText}
-        placeholder={clotheItem.category}
-        value={category}
-        onChangeText={setCategory}
-      />
-      <TextInput
-        style={styles.descriptionText}
-        placeholder={clotheItem.color}
-        value={color}
-        onChangeText={setColor}
-      />
-      <Text style={styles.descriptionText}>
-        Wear Frequency: {clotheItem.tags.wear_frequency}
-      </Text>
-      <TouchableOpacity
-        style={styles.wearTodayButton}
-        onPress={handleSubmitEdit}
-      >
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
+        <Text style={styles.descriptionText}>
+          This is a short description of the item.
+        </Text>
+
+        <Text style={styles.text}>
+          Top Category:
+          <TextInput
+            style={styles.textInput}
+            placeholder={`top_category: ${clotheItem.top_category}`}
+            value={top_category}
+            onChangeText={setTopCategory}
+          />
+        </Text>
+
+        <Text style={styles.text}>
+          Category:
+          <TextInput
+            style={styles.textInput}
+            placeholder={clotheItem.category}
+            value={category}
+            onChangeText={setCategory}
+          />
+        </Text>
+
+        <Text style={styles.text}>
+          Color:
+          <TextInput
+            style={styles.textInput}
+            placeholder={clotheItem.color}
+            value={color}
+            onChangeText={setColor}
+          />
+        </Text>
+
+        <Text style={styles.descriptionText}>
+          Wear Frequency: {clotheItem.tags.wear_frequency}
+        </Text>
+        <TouchableOpacity
+          style={styles.wearTodayButton}
+          onPress={handleSubmitEdit}
+        >
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -210,6 +229,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     fontWeight: "bold",
+  },
+  text: {
+    fontSize: 16,
+    color: "#7F8C8D",
+    marginRight: 10,
+  },
+
+  textInput: {
+    borderWidth: 2,
+    borderColor: "#777",
+    padding: 8,
+    margin: 10,
   },
 });
 
