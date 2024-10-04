@@ -17,30 +17,84 @@ const clothes_item = () => {
   //   const userAccount = useContext(UserAccountContext);
   const id = 1;
   const [clotheItem, setClotheItem] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(null);
 
   useEffect(() => {
     axios
       .get(`https://swagswapp-api.onrender.com/api/clothes/${id}/1`)
       .then((response) => {
         setClotheItem(response.data[0]);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsError(`Fail to load. Error is: ${err}`);
+        setIsLoading(false);
       });
   }, []);
 
+  if (isLoading) {
+    return (
+      <View>
+        <Text> Loading </Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View>
+        <Text>{isError}</Text>
+      </View>
+    );
+  }
+
+  if (!clotheItem) {
+    return (
+      <View>
+        <Text>No such clothing itme!</Text>
+      </View>
+    );
+  }
+
   console.log(clotheItem);
 
-  const tags = ["Top Category", "Category", "Color"];
+  const tags = [
+    clotheItem.top_category,
+    clotheItem.category,
+    clotheItem.color,
+    clotheItem.tags.sleeves,
+    clotheItem.tags.style,
+  ];
+
   const handleWearToday = () => {
+    useEffect(() => {
+      axios
+        .patch(`https://swagswapp-api.onrender.com/api/clothes/${id}/1`)
+        .then((response) => {
+          setClotheItem(response.data[0]);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsError(`Fail to load. Error is: ${err}`);
+          setIsLoading(false);
+        });
+    }, []);
+
     Alert.alert("Marked as Worn", "You are wearing this item today!");
   };
+
+  const handleEdit = () => {};
+
   return (
     <View style={styles.container}>
       <Header />
       <Text style={styles.name}>Clothes Item Name</Text>
       <Image
         style={styles.image}
-        source={{ uri: "https://img.icons8.com/ios/5000/eeeeee/jumper.png" }}
+        source={{
+          uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+        }}
       />
       <View style={styles.tagContainer}>
         {tags.map((tag, index) => (
@@ -53,18 +107,19 @@ const clothes_item = () => {
       <Text style={styles.descriptionText}>
         This is a short description of the item.
       </Text>
-      <Text style={styles.descriptionText}>Last Worn: 10/08/2024</Text>
-      <Text style={styles.descriptionText}>Wear Frequency: 5</Text>
+      <Text style={styles.descriptionText}>
+        Last Worn: {clotheItem.tags.last_date_worn}
+      </Text>
+      <Text style={styles.descriptionText}>
+        Wear Frequency: {clotheItem.tags.wear_frequency}
+      </Text>
       <TouchableOpacity
         style={styles.wearTodayButton}
         onPress={handleWearToday}
       >
         <Text style={styles.buttonText}>Wear Today</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.wearTodayButton}
-        onPress={handleWearToday}
-      >
+      <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
         <Text style={styles.buttonText}>Edit Details</Text>
       </TouchableOpacity>
     </View>
@@ -97,7 +152,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   tag: {
-    backgroundColor: "#3498DB",
+    backgroundColor: "#ddd",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 20,
@@ -105,7 +160,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tagText: {
-    color: "#fff",
+    color: "#111",
     fontSize: 14,
   },
   descriptionLabel: {
@@ -120,7 +175,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   wearTodayButton: {
-    backgroundColor: "#1E8449",
+    backgroundColor: "#111",
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
@@ -134,3 +189,7 @@ const styles = StyleSheet.create({
 });
 
 export default clothes_item;
+
+// 1. handle wear today => patch wear freqency and last_date_worn
+// 2. handle edit => edit page => gives user access details to edit
+// 3. edit page will have submit button => Patch and update the clothes item
