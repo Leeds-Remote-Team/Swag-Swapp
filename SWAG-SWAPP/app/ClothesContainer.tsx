@@ -7,9 +7,9 @@ export const ClothesContainer = ({ title, items }) => {
     <View>
       <Text>{title}</Text>
       <ScrollView horizontal>
-        {items.map((item) => {
-          <ClothesCard key={clothes.id} item={item} />;
-        })}
+        {items.map((item) => (
+          <ClothesCard key={item.id} title={item.title} image={item.image} />
+        ))}
       </ScrollView>
     </View>
   );

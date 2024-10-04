@@ -25,8 +25,11 @@ const Dashboard = () => {
     setIsLoading(true);
     setIsError(false);
 
+    let newAccessories; // Declare newAccessories here
+
     fetchAllAccessories(user_id)
-      .then((newAccessories) => {
+      .then((data) => {
+        newAccessories = data; // Assign the fetched data to newAccessories
         setAccessories(newAccessories);
       })
       .catch(() => setIsError(true))
