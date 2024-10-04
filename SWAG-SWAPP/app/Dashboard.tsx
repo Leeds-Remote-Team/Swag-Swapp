@@ -19,7 +19,7 @@ import {
 } from "../Helpers/fetchSortedClothes";
 import { useState, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
-import axios from "axios";
+// import { fetchAllClothes } from "@/Helpers/fetchAllClothes";
 
 const Dashboard = () => {
   const user_id = 3;
@@ -36,9 +36,7 @@ const Dashboard = () => {
 
     fetchMostPopularClothes(user_id)
       .then((popular) => {
-        console.log(popular, "<<=== pop clothes");
         setMostPopular(popular);
-        console.log("Popular Clothes:", popular);
       })
       .catch(() => {
         setIsError(true);
@@ -46,8 +44,8 @@ const Dashboard = () => {
 
     fetchNewestClothes(user_id)
       .then((newClothes) => {
-        setNewest(newClothes);
         console.log("Newest Clothes:", newClothes);
+        setNewest(newClothes);
       })
       .catch(() => {
         setIsError(true);
@@ -56,7 +54,6 @@ const Dashboard = () => {
     fetchNeedsSomeLovingClothes(user_id)
       .then((lovingClothes) => {
         setNeedsSomeLoving(lovingClothes);
-        console.log("Needs Some Loving Clothes:", lovingClothes);
       })
       .catch(() => {
         setIsError(true);

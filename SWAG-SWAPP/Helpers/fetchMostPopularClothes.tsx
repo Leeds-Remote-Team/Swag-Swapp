@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchAllClothes = (user_id) => {
+export const fetchMostPopularClothes = (user_id) => {
   const url = `https://swagswapp-api.onrender.com/api/clothes/${user_id}`;
 
   return axios
