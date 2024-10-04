@@ -1,6 +1,5 @@
 export const fetchAllAccessories = (user_id) => {
-  const url =
-    "https://swagswapp-api.onrender.com/api/clothes/:user_id?searchText=accessories";
+  const url = `https://swagswapp-api.onrender.com/api/clothes/${user_id}?searchText=accessories`;
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
@@ -8,5 +7,7 @@ export const fetchAllAccessories = (user_id) => {
       }
       return response.json();
     })
-    .then((data) => console.log(data, "<-----DATA"));
+    .then((data) => {
+      return data;
+    });
 };

@@ -11,30 +11,68 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Header } from "./Header";
 import { Link } from "expo-router";
 import { ClothesContainer } from "./ClothesContainer";
-import { fetchAllAccessories } from "@/Helpers/fetchAllAccessories";
+import { fetchAllAccessories } from "../Helpers/fetchAllAccessories";
+import {
+  fetchMostPopularClothes,
+  fetchNewestClothes,
+  fetchNeedsSomeLovingClothes,
+} from "../Helpers/fetchSortedClothes";
 import { useState, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
+import axios from "axios";
 
 const Dashboard = () => {
   const user_id = 3;
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [accessories, setAccessories] = useState(false);
+  const [accessories, setAccessories] = useState([]);
+  const [mostPopular, setMostPopular] = useState([]);
+  const [newest, setNewest] = useState([]);
+  const [needsSomeLoving, setNeedsSomeLoving] = useState([]);
 
   useEffect(() => {
     setIsLoading(true);
     setIsError(false);
 
-    let newAccessories; // Declare newAccessories here
+    fetchMostPopularClothes(user_id)
+      .then((popular) => {
+        console.log(popular, "<<=== pop clothes");
+        setMostPopular(popular);
+        console.log("Popular Clothes:", popular);
+      })
+      .catch(() => {
+        setIsError(true);
+      });
+
+    fetchNewestClothes(user_id)
+      .then((newClothes) => {
+        setNewest(newClothes);
+        console.log("Newest Clothes:", newClothes);
+      })
+      .catch(() => {
+        setIsError(true);
+      });
+
+    fetchNeedsSomeLovingClothes(user_id)
+      .then((lovingClothes) => {
+        setNeedsSomeLoving(lovingClothes);
+        console.log("Needs Some Loving Clothes:", lovingClothes);
+      })
+      .catch(() => {
+        setIsError(true);
+      });
 
     fetchAllAccessories(user_id)
       .then((data) => {
-        newAccessories = data; // Assign the fetched data to newAccessories
-        setAccessories(newAccessories);
+        setAccessories(data);
       })
-      .catch(() => setIsError(true))
-      .finally(() => setIsLoading(false));
-  }, []);
+      .catch(() => {
+        setIsError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [user_id]);
 
   if (isLoading) {
     return <ActivityIndicator size="large" color="blue" />;
@@ -44,10 +82,13 @@ const Dashboard = () => {
     <View style={styles.container}>
       <Header />
       <ScrollView>
-        {/* <ClothesContainer title="Favorite Clothes" items={favoriteClothes} />
-        <ClothesContainer title="Most Recent Clothes" items={mostRecent} /> */}
+        <ClothesContainer title="Favorite Clothes" items={mostPopular} />
+        <ClothesContainer title="Most Recent Clothes" items={newest} />
         <ClothesContainer title="Accessories" items={accessories} />
-        {/* <ClothesContainer title="Oldest Clothes" items={oldestClothes} /> */}
+        <ClothesContainer
+          title="These needs some love"
+          items={needsSomeLoving}
+        />
       </ScrollView>
       <View style={styles.add}>
         <TouchableOpacity>
