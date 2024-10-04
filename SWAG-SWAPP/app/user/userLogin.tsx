@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Image,
@@ -8,13 +8,19 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import axios from "axios";
 import { Link, Redirect } from "expo-router";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useRouter } from "expo-router";
+import { UserAccountContext } from "../_layout";
 
 export default function userLogin() {
   const [userNameText, setUserNameText] = useState("");
   const [passwordText, setPasswordText] = useState("");
+  const [userAccount, setUserAccount] = useContext(UserAccountContext);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
 
   const router = useRouter();
 
@@ -24,14 +30,42 @@ export default function userLogin() {
       console.log("Error");
       return;
     }
-
-    // Alert.alert("Success!", "You've created your account!");
-    console.log("Success");
-    // return <Redirect href="/Dashboard" />;
-    router.push("/Dashboard");
+    setIsLoading(true);
+    axios
+      .get(`https://swagswapp-api.onrender.com/api/users/${userNameText}`)
+      .then((response) => {
+        console.log(response);
+        setUserAccount(response.data);
+        setIsLoading(false);
+        Alert.alert("Success", "Login Successful!");
+        router.push("/Dashboard");
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        setIsError(`Fail to retreive User Id. Error is: ${err}`);
+        Alert.alert("Error", "Invalid username or password.");
+      });
   };
 
   console.log(userNameText, passwordText);
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text> Retreiving User Details </Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View>
+        <Text>{isError}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}> Login </Text>

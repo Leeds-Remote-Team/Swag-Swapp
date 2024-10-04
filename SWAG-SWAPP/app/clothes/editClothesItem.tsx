@@ -17,26 +17,22 @@ import { useRouter } from "expo-router";
 const clothes_item = () => {
   //   const userAccount = useContext(UserAccountContext);
   const id = 1;
-  const [userAccount, setUserAccount] = useContext(UserAccountContext);
   const [clotheItem, setClotheItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
-
   const today = new Date();
 
   const router = useRouter();
 
   useEffect(() => {
     axios
-      .get(
-        `https://swagswapp-api.onrender.com/api/clothes/${userAccount.user_id}/1`
-      )
+      .get(`https://swagswapp-api.onrender.com/api/clothes/${id}/1`)
       .then((response) => {
         setClotheItem(response.data[0]);
         setIsLoading(false);
       })
       .catch((err) => {
-        setIsError(`Fail to load. Error is: ---> ${err}`);
+        setIsError(`Fail to load. Error is: ${err}`);
         setIsLoading(false);
       });
   }, []);
@@ -65,6 +61,8 @@ const clothes_item = () => {
     );
   }
 
+  console.log(clotheItem);
+
   const tags = [
     clotheItem.top_category,
     clotheItem.category,
@@ -74,15 +72,8 @@ const clothes_item = () => {
   ];
 
   const handleWearToday = () => {
-    let newWearUpdate = {
-      last_date_worn: new Date().toISOString().split("T")[0],
-      wear_frequency: clotheItem.tags.wear_frequency + 1,
-    };
     axios
-      .patch(
-        `https://swagswapp-api.onrender.com/api/clothes/${id}/1`,
-        newWearUpdate
-      )
+      .patch(`https://swagswapp-api.onrender.com/api/clothes/${id}/1`)
       .then((response) => {
         setClotheItem((prevState) => ({
           ...prevState,
@@ -101,7 +92,6 @@ const clothes_item = () => {
       });
   };
 
-  console.log(clotheItem);
   const handleEdit = () => {
     router.push("/clothes/editClothesItem");
   };
@@ -209,7 +199,3 @@ const styles = StyleSheet.create({
 });
 
 export default clothes_item;
-
-// 1. handle wear today => patch wear freqency and last_date_worn
-// 2. handle edit => edit page => gives user access details to edit
-// 3. edit page will have submit button => Patch and update the clothes item
