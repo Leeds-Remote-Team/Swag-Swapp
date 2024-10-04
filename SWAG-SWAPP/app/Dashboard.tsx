@@ -9,22 +9,42 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Header } from "./Header";
-import { ClothesCard } from "./ClothesCard";
 import { Link } from "expo-router";
+import { ClothesContainer } from "./ClothesContainer";
+import { fetchAllAccessories } from "@/Helpers/fetchAllAccessories";
+import { useState, useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 
 const Dashboard = () => {
-  // const mostWornClothes = *some logic*
-  // const mostRecentClothes = *some logic*
-  // const oldestClothes = *some logic*
+  const user_id = 3;
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [accessories, setAccessories] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setIsError(false);
+
+    fetchAllAccessories(user_id)
+      .then((newAccessories) => {
+        setAccessories(newAccessories);
+      })
+      .catch(() => setIsError(true))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="blue" />;
+  }
 
   return (
     <View style={styles.container}>
       <Header />
       <ScrollView>
-        <ClothesCard title="Favorite Clothes" />
-        <ClothesCard title="Most Recent Clothes" />
-        <ClothesCard title="Accessories" />
-        <ClothesCard title="Oldest Clothes" />
+        {/* <ClothesContainer title="Favorite Clothes" items={favoriteClothes} />
+        <ClothesContainer title="Most Recent Clothes" items={mostRecent} /> */}
+        <ClothesContainer title="Accessories" items={accessories} />
+        {/* <ClothesContainer title="Oldest Clothes" items={oldestClothes} /> */}
       </ScrollView>
       <View style={styles.add}>
         <TouchableOpacity>
@@ -46,6 +66,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  card: {
+    margin: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  image: {
+    width: 100,
+    height: 100,
+  },
+  title: {
+    marginTop: 10,
+    fontSize: 16,
   },
 });
 
