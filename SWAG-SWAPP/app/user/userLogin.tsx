@@ -34,7 +34,6 @@ export default function userLogin() {
     axios
       .get(`https://swagswapp-api.onrender.com/api/users/${userNameText}`)
       .then((response) => {
-        console.log(response);
         setUserAccount(response.data);
         setIsLoading(false);
         Alert.alert("Success", "Login Successful!");
@@ -47,8 +46,6 @@ export default function userLogin() {
         Alert.alert("Error", "Invalid username or password.");
       });
   };
-
-  console.log(userNameText, passwordText);
 
   if (isLoading) {
     return (

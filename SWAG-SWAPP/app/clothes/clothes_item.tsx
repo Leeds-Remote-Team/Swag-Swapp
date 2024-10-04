@@ -98,8 +98,6 @@ const clothes_item = () => {
       });
   };
 
-  console.log(clotheItem);
-
   const handleEdit = () => {
     router.push({
       pathname: "/clothes/editClothesItem",
