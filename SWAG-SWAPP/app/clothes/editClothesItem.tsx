@@ -33,7 +33,7 @@ const editClothesItem = () => {
   //   return <Text> No item id to edit </Text>;
   // }
 
-  // console.log(item_id);
+  // console.log(item_id);w
 
   useEffect(
     () => {
@@ -138,13 +138,13 @@ const editClothesItem = () => {
 
         <Text style={styles.text}>
           Category:
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder={clotheItem.category}
             value={category}
             onChangeText={setCategory}
           />
-        </Text>
 
         <Text style={styles.text}>
           Color:
