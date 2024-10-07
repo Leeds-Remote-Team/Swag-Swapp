@@ -60,6 +60,7 @@ const Dashboard = () => {
 
     fetchAllAccessories(user_id)
       .then((data) => {
+        console.log(data, "accessory data");
         setAccessories(data);
       })
       .catch(() => {
@@ -82,7 +83,7 @@ const Dashboard = () => {
         <ClothesContainer title="Most Recent Clothes" items={newest} />
         <ClothesContainer title="Accessories" items={accessories} />
         <ClothesContainer
-          title="These needs some love"
+          title="These need some love"
           items={needsSomeLoving}
         />
       </ScrollView>
