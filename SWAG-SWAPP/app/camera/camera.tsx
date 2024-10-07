@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
+import { Redirect } from "expo-router";
 
 const supabase = createClient(
   "https://uhqkbcxmjnqjhwbmupzq.supabase.co",
@@ -29,7 +30,6 @@ export default function cameraFunc() {
   const [clothesItems, setClothesItems] = useContext(ClothesContext);
 
   useEffect(() => {
-    console.log("ahhhhh");
     if (clothesImage.uri !== undefined) {
       sendImage(clothesImage.uri);
       axios
@@ -51,7 +51,9 @@ export default function cameraFunc() {
         )
         .then((response) => {
           let responseObject = response.data.records[0]._objects;
-          responseObject.url = fileName;
+          responseObject.url =
+            "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/" +
+            fileName;
           setClothesItems(responseObject);
         })
         .catch((err) => {
@@ -60,15 +62,12 @@ export default function cameraFunc() {
     }
   }, [clothesImage]);
 
-  console.log(clothesItems);
-
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
   }
 
   let fileName = "";
-  console.log("here");
   if (!permission.granted) {
     // Camera permissions are not granted yet.
     return (
@@ -110,7 +109,9 @@ export default function cameraFunc() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
 
-  console.log("here");
+  if (clothesItems.url) {
+    return <Redirect href={"/new_item/new_item"} />;
+  }
 
   return (
     <View style={styles.container}>
