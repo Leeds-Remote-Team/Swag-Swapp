@@ -6,23 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from "react-native";
 import { Header } from "../Header";
 import axios from "axios";
-import { useState, createContext, useContext } from "react";
+import { useState, useContext } from "react";
 import { Link } from "expo-router";
 import { UserAccountContext } from "../_layout";
 import { useRouter } from "expo-router";
 
 const clothes_item = () => {
-  //   const userAccount = useContext(UserAccountContext);
-  const id = 1;
   const [userAccount, setUserAccount] = useContext(UserAccountContext);
   const [clotheItem, setClotheItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
-
-  const today = new Date();
 
   const router = useRouter();
 
@@ -39,7 +36,7 @@ const clothes_item = () => {
         setIsError(`Fail to load. Error is: ---> ${err}`);
         setIsLoading(false);
       });
-  }, []);
+  }, [userAccount]);
 
   if (isLoading) {
     return (
@@ -80,7 +77,7 @@ const clothes_item = () => {
     };
     axios
       .patch(
-        `https://swagswapp-api.onrender.com/api/clothes/${id}/1`,
+        `https://swagswapp-api.onrender.com/api/clothes/${userAccount.user_id}/1`,
         newWearUpdate
       )
       .then((response) => {
@@ -102,46 +99,52 @@ const clothes_item = () => {
   };
 
   console.log(clotheItem);
+
   const handleEdit = () => {
-    router.push("/clothes/editClothesItem");
+    router.push({
+      pathname: "/clothes/editClothesItem",
+      state: { clotheItem },
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Header />
-      <Text style={styles.name}>Clothes Item Name</Text>
-      <Image
-        style={styles.image}
-        source={{
-          uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
-        }}
-      />
-      <View style={styles.tagContainer}>
-        {tags.map((tag, index) => (
-          <View key={index} style={styles.tag}>
-            <Text style={styles.tagText}>{tag}</Text>
-          </View>
-        ))}
-      </View>
-      <Text style={styles.descriptionLabel}>Description:</Text>
-      <Text style={styles.descriptionText}>
-        This is a short description of the item.
-      </Text>
-      <Text style={styles.descriptionText}>
-        Last Worn: {clotheItem.tags.last_date_worn}
-      </Text>
-      <Text style={styles.descriptionText}>
-        Wear Frequency: {clotheItem.tags.wear_frequency}
-      </Text>
-      <TouchableOpacity
-        style={styles.wearTodayButton}
-        onPress={handleWearToday}
-      >
-        <Text style={styles.buttonText}>Wear Today</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Edit Details</Text>
-      </TouchableOpacity>
+      <ScrollView>
+        <Header />
+        <Text style={styles.name}>Clothes Item Name</Text>
+        <Image
+          style={styles.image}
+          source={{
+            uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+          }}
+        />
+        <View style={styles.tagContainer}>
+          {tags.map((tag, index) => (
+            <View key={index} style={styles.tag}>
+              <Text style={styles.tagText}>{tag}</Text>
+            </View>
+          ))}
+        </View>
+        <Text style={styles.descriptionLabel}>Description:</Text>
+        <Text style={styles.descriptionText}>
+          This is a short description of the item.
+        </Text>
+        <Text style={styles.descriptionText}>
+          Last Worn: {clotheItem.tags.last_date_worn}
+        </Text>
+        <Text style={styles.descriptionText}>
+          Wear Frequency: {clotheItem.tags.wear_frequency}
+        </Text>
+        <TouchableOpacity
+          style={styles.wearTodayButton}
+          onPress={handleWearToday}
+        >
+          <Text style={styles.buttonText}>Wear Today</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
+          <Text style={styles.buttonText}>Edit Details</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };

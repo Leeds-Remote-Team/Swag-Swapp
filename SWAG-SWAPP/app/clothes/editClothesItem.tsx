@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from "react-native";
 import { Header } from "../Header";
 import axios from "axios";
@@ -14,28 +15,37 @@ import { Link } from "expo-router";
 import { UserAccountContext } from "../_layout";
 import { useRouter } from "expo-router";
 
-const clothes_item = () => {
+const editClothesItem = () => {
   //   const userAccount = useContext(UserAccountContext);
-  const id = 1;
-  const [clotheItem, setClotheItem] = useState(null);
+
+  const router = useRouter();
+  const { clotheItem } = router.state || {};
+
+  if (!clotheItem) {
+    return <Text> No item to edit </Text>;
+  }
+
+  const [top_category, setTopCategory] = useState(clotheItem.top_category);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
   const today = new Date();
 
-  const router = useRouter();
-
-  useEffect(() => {
-    axios
-      .get(`https://swagswapp-api.onrender.com/api/clothes/${id}/1`)
-      .then((response) => {
-        setClotheItem(response.data[0]);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsError(`Fail to load. Error is: ${err}`);
-        setIsLoading(false);
-      });
-  }, []);
+  let newDetails = {
+    item_id: 1,
+    user_id: 1,
+    img_url:
+      "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+    created_at: "2024-10-04T15:23:34.518Z",
+    top_category: "clothing",
+    category: "t-shirt",
+    tags: {
+      style: "t-shirt",
+      sleeves: "short-sleeve",
+      last_date_worn: "2024-10-04",
+      wear_frequency: 7,
+    },
+  };
 
   if (isLoading) {
     return (
@@ -61,8 +71,6 @@ const clothes_item = () => {
     );
   }
 
-  console.log(clotheItem);
-
   const tags = [
     clotheItem.top_category,
     clotheItem.category,
@@ -71,9 +79,28 @@ const clothes_item = () => {
     clotheItem.tags.style,
   ];
 
-  const handleWearToday = () => {
+  const handleEdit = () => {
+    let newDetailUpdate = {
+      item_id: 1,
+      user_id: 1,
+      img_url:
+        "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+      created_at: "2024-10-04T15:23:34.518Z",
+      top_category: "clothing",
+      category: "t-shirt",
+      tags: {
+        style: "t-shirt",
+        sleeves: "short-sleeve",
+        last_date_worn: "2024-10-04",
+        wear_frequency: 7,
+      },
+      color: "red",
+    };
     axios
-      .patch(`https://swagswapp-api.onrender.com/api/clothes/${id}/1`)
+      .patch(
+        `https://swagswapp-api.onrender.com/api/clothes/${id}/1`,
+        newDetailUpdate
+      )
       .then((response) => {
         setClotheItem((prevState) => ({
           ...prevState,
@@ -84,7 +111,7 @@ const clothes_item = () => {
           },
         }));
         console.log("Success");
-        Alert.alert("Marked as Worn", "You are wearing this item today!");
+        Alert.alert("Success!", "Clothes updated!");
       })
       .catch((err) => {
         console.log(err);
@@ -92,48 +119,40 @@ const clothes_item = () => {
       });
   };
 
-  const handleEdit = () => {
-    router.push("/clothes/editClothesItem");
-  };
-
-  return (
-    <View style={styles.container}>
-      <Header />
-      <Text style={styles.name}>Clothes Item Name</Text>
-      <Image
-        style={styles.image}
-        source={{
-          uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
-        }}
-      />
-      <View style={styles.tagContainer}>
-        {tags.map((tag, index) => (
-          <View key={index} style={styles.tag}>
-            <Text style={styles.tagText}>{tag}</Text>
-          </View>
-        ))}
-      </View>
-      <Text style={styles.descriptionLabel}>Description:</Text>
-      <Text style={styles.descriptionText}>
-        This is a short description of the item.
-      </Text>
-      <Text style={styles.descriptionText}>
-        Last Worn: {clotheItem.tags.last_date_worn}
-      </Text>
-      <Text style={styles.descriptionText}>
-        Wear Frequency: {clotheItem.tags.wear_frequency}
-      </Text>
-      <TouchableOpacity
-        style={styles.wearTodayButton}
-        onPress={handleWearToday}
-      >
-        <Text style={styles.buttonText}>Wear Today</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Edit Details</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  // return (
+  //   <View style={styles.container}>
+  //     <Header />
+  //     <Text style={styles.name}>Editing Details</Text>
+  //     <Image
+  //       style={styles.image}
+  //       source={{
+  //         uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+  //       }}
+  //     />
+  //     <View style={styles.tagContainer}>
+  //       <TextInput style={styles.descriptionLabel} placeholder = {cloth}>Description:</Text>
+  //     </View>
+  //     <Text style={styles.descriptionLabel}>Description:</Text>
+  //     <Text style={styles.descriptionText}>
+  //       This is a short description of the item.
+  //     </Text>
+  //     <Text style={styles.descriptionText}>
+  //       Last Worn: {clotheItem.tags.last_date_worn}
+  //     </Text>
+  //     <Text style={styles.descriptionText}>
+  //       Wear Frequency: {clotheItem.tags.wear_frequency}
+  //     </Text>
+  //     <TouchableOpacity
+  //       style={styles.wearTodayButton}
+  //       onPress={handleWearToday}
+  //     >
+  //       <Text style={styles.buttonText}>Wear Today</Text>
+  //     </TouchableOpacity>
+  //     <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
+  //       <Text style={styles.buttonText}>Edit Details</Text>
+  //     </TouchableOpacity>
+  //   </View>
+  // );
 };
 const styles = StyleSheet.create({
   container: {
@@ -198,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default clothes_item;
+// export default clothes_item;
