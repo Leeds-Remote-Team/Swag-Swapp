@@ -20,7 +20,6 @@ const editClothesItem = () => {
 
   const router = useRouter();
   const { clotheItem } = router.state || {};
-  
 
   if (!clotheItem) {
     return <Text> No item to edit </Text>;
@@ -33,8 +32,6 @@ const editClothesItem = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
   const today = new Date();
-
-  
 
   if (isLoading) {
     return (
@@ -89,7 +86,7 @@ const editClothesItem = () => {
         // }));
         console.log("Success");
         Alert.alert("Success!", "Clothes updated!");
-        router.push("/clothes/clothes_item")
+        router.push("/clothes/clothes_item");
       })
       .catch((err) => {
         console.log(err);
@@ -108,15 +105,32 @@ const editClothesItem = () => {
         }}
       />
       <View style={styles.tagContainer}>
-        <TextInput style={styles.descriptionLabel} placeholder = {cloth}>Description:</Text>
+        <Text style={styles.descriptionLabel} placeholder={cloth}>
+          Description:
+        </Text>
       </View>
       <Text style={styles.descriptionLabel}>Description:</Text>
       <Text style={styles.descriptionText}>
         This is a short description of the item.
       </Text>
-      <TextInput style={styles.descriptionText} placeholder={clotheItem.top_category} value={clotheItem.top_category} onChangeText={setTopCategory}/>
-      <TextInput style={styles.descriptionText} placeholder={clotheItem.top_category} value={clotheItem.top_category} onChangeText={setTopCategory}/>
-      <TextInput style={styles.descriptionText} placeholder={clotheItem.top_category} value={clotheItem.top_category} onChangeText={setTopCategory}/>
+      <TextInput
+        style={styles.descriptionText}
+        placeholder={clotheItem.top_category}
+        value={clotheItem.top_category}
+        onChangeText={setTopCategory}
+      />
+      <TextInput
+        style={styles.descriptionText}
+        placeholder={clotheItem.top_category}
+        value={clotheItem.top_category}
+        onChangeText={setTopCategory}
+      />
+      <TextInput
+        style={styles.descriptionText}
+        placeholder={clotheItem.top_category}
+        value={clotheItem.top_category}
+        onChangeText={setTopCategory}
+      />
 
       <Text style={styles.descriptionText}>
         Wear Frequency: {clotheItem.tags.wear_frequency}

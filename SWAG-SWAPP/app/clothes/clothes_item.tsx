@@ -26,7 +26,7 @@ const clothes_item = () => {
   useEffect(() => {
     axios
       .get(
-        `https://swagswapp-api.onrender.com/api/clothes/${userAccount.user_id}/1`
+        `https://swagswapp-api.onrender.com/api/clothes/20/${userAccount.user_id}`
       )
       .then((response) => {
         setClotheItem(response.data[0]);
@@ -77,7 +77,7 @@ const clothes_item = () => {
     };
     axios
       .patch(
-        `https://swagswapp-api.onrender.com/api/clothes/${userAccount.user_id}/1`,
+        `https://swagswapp-api.onrender.com/api/clothes/20/${userAccount.user_id}`,
         newWearUpdate
       )
       .then((response) => {
@@ -113,7 +113,7 @@ const clothes_item = () => {
         <Image
           style={styles.image}
           source={{
-            uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+            uri: clotheItem.img_url,
           }}
         />
         <View style={styles.tagContainer}>
@@ -208,12 +208,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-<<<<<<< HEAD
 
 export default clothes_item;
 
 // 1. handle wear today => patch wear freqency and last_date_worn
 // 2. handle edit => edit page => gives user access details to edit
 // 3. edit page will have submit button => Patch and update the clothes item
-=======
->>>>>>> 6973a0d (in progress)
