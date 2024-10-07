@@ -136,15 +136,13 @@ const editClothesItem = () => {
           />
         </Text>
 
-        <Text style={styles.text}>
-          Category:
-          </Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder={clotheItem.category}
-            value={category}
-            onChangeText={setCategory}
-          />
+        <Text style={styles.text}>Category:</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder={clotheItem.category}
+          value={category}
+          onChangeText={setCategory}
+        />
 
         <Text style={styles.text}>
           Color:
@@ -241,6 +239,7 @@ const styles = StyleSheet.create({
     borderColor: "#777",
     padding: 8,
     margin: 10,
+    width: 200,
   },
 });
 
