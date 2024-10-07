@@ -1,5 +1,5 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import { useRef, useState, createContext, useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   AppRegistry,
   Button,
@@ -9,19 +9,65 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ImageContext } from "../_layout";
+import { createClient } from "@supabase/supabase-js";
+import axios from "axios";
+import { Redirect } from "expo-router";
+
+const supabase = createClient(
+  "https://uhqkbcxmjnqjhwbmupzq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVocWtiY3htam5xamh3Ym11cHpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc0Mjg3MzgsImV4cCI6MjA0MzAwNDczOH0.meeCMyXfLWNLgmU7b0RAWQMYXwemFFZ6ZSJTe5cvLfw"
+);
+import { ClothesContext } from "../_layout";
 
 export default function cameraFunc() {
+  const cameraRef = useRef(null);
   const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
-  const [testImage, setTestImage] = useContext(ImageContext);
-  const cameraRef = useRef(null);
+  const [clothesImage, setClothesImage] = useState({
+    uri: undefined,
+    base64: undefined,
+  });
+  const [clothesItems, setClothesItems] = useContext(ClothesContext);
+
+  useEffect(() => {
+    if (clothesImage.uri !== undefined) {
+      sendImage(clothesImage.uri);
+      axios
+        .post(
+          "https://api.ximilar.com/tagging/fashion/v2/detect_tags",
+          {
+            records: [
+              {
+                _base64: clothesImage.base64, // Use "_base64" to send the image in base64 format
+              },
+            ],
+          },
+          {
+            headers: {
+              Authorization: "Token fa62910f8e5841247fb5e78d409d38d0cc1fef46",
+              "Content-Type": "application/json", // Ensure JSON format for the request body
+            },
+          }
+        )
+        .then((response) => {
+          let responseObject = response.data.records[0]._objects;
+          responseObject.url =
+            "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/" +
+            fileName;
+          setClothesItems(responseObject);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [clothesImage]);
 
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
   }
 
+  let fileName = "";
   if (!permission.granted) {
     // Camera permissions are not granted yet.
     return (
@@ -34,28 +80,39 @@ export default function cameraFunc() {
     );
   }
 
+  const sendImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const arrayBuffer = await new Response(blob).arrayBuffer();
+    fileName = `public/${Date.now()}.jpg`;
+    const { error } = await supabase.storage
+      .from("ClothingImages")
+      .upload(fileName, arrayBuffer, {
+        contentType: "image/jpeg",
+        upsert: false,
+      });
+    if (error) {
+      console.log("error uploading image:", error);
+    }
+  };
+
   const hanldeTakePhoto = async () => {
     if (cameraRef.current) {
       const takenPhoto = await cameraRef.current.takePictureAsync({
         base64: true,
       });
-      setTestImage(takenPhoto);
+      setClothesImage(takenPhoto);
     }
   };
+
   function toggleCameraFacing() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
-  if (testImage.uri !== undefined) {
-    return (
-      <View>
-        <Text>Your Image</Text>
-        <Image
-          source={{ uri: testImage.uri }}
-          style={{ width: 400, height: 400 }}
-        />
-      </View>
-    );
+
+  if (clothesItems.url) {
+    return <Redirect href={"/new_item/new_item"} />;
   }
+
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
