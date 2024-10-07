@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {
 } from "../Helpers/fetchSortedClothes";
 import { useState, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
+import { ClothesContext } from "./_layout";
 // import { fetchAllClothes } from "@/Helpers/fetchAllClothes";
 
 const Dashboard = () => {
@@ -29,8 +30,10 @@ const Dashboard = () => {
   const [mostPopular, setMostPopular] = useState([]);
   const [newest, setNewest] = useState([]);
   const [needsSomeLoving, setNeedsSomeLoving] = useState([]);
+  const [clothesItems, setClothesItems] = useContext(ClothesContext);
 
   useEffect(() => {
+    setClothesItems([{ _tags_map: [] }]);
     setIsLoading(true);
     setIsError(false);
 
