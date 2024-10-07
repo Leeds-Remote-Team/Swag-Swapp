@@ -78,7 +78,7 @@ const Dashboard = () => {
     <View style={styles.container}>
       <Header />
       <ScrollView>
-        <ClothesContainer title="Favorite Clothes" items={mostPopular} />
+        <ClothesContainer title="Favourite Clothes" items={mostPopular} />
         <ClothesContainer title="Most Recent Clothes" items={newest} />
         <ClothesContainer title="Accessories" items={accessories} />
         <ClothesContainer
