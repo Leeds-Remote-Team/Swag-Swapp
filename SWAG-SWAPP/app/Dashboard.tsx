@@ -60,7 +60,6 @@ const Dashboard = () => {
 
     fetchAllAccessories(user_id)
       .then((data) => {
-        console.log(data, "accessory data");
         setAccessories(data);
       })
       .catch(() => {
