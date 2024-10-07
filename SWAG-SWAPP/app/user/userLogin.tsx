@@ -1,24 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
-  Button,
-  Image,
   Text,
   TextInput,
   View,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
-import { Link, Redirect } from "expo-router";
-import { useState, useContext } from "react";
+import { Link } from "expo-router";
 import { useRouter } from "expo-router";
 import { UserAccountContext } from "../_layout";
+import CustomButton from "../../components/CustomButton";
 
-export default function userLogin() {
+export default function UserLogin() {
   const [userNameText, setUserNameText] = useState("");
   const [passwordText, setPasswordText] = useState("");
   const [userAccount, setUserAccount] = useContext(UserAccountContext);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
 
@@ -26,8 +24,7 @@ export default function userLogin() {
 
   const handleLogin = () => {
     if (!userNameText || !passwordText) {
-      Alert.alert("Error", "Fill the blanks first!!");
-      console.log("Error");
+      Alert.alert("Error", "Please fill in all fields.");
       return;
     }
     setIsLoading(true);
@@ -40,32 +37,32 @@ export default function userLogin() {
         router.push("/Dashboard");
       })
       .catch((err) => {
-        console.log(err);
         setIsLoading(false);
-        setIsError(`Fail to retreive User Id. Error is: ${err}`);
+        setIsError("Invalid username or password.");
         Alert.alert("Error", "Invalid username or password.");
       });
   };
 
   if (isLoading) {
     return (
-      <View>
-        <Text> Retreiving User Details </Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#34495E" />
+        <Text style={styles.loadingText}>Retrieving User Details...</Text>
       </View>
     );
   }
 
   if (isError) {
     return (
-      <View>
-        <Text>{isError}</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{isError}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}> Login </Text>
+      <Text style={styles.title}>Login</Text>
 
       <TextInput
         style={styles.input}
@@ -75,11 +72,13 @@ export default function userLogin() {
       />
       <TextInput
         style={styles.input}
-        placeholder="password"
+        placeholder="Password"
         value={passwordText}
         onChangeText={setPasswordText}
+        secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <CustomButton title="Login" onPress={handleLogin} style={undefined} textStyle={undefined} />
+
       <Link style={styles.link} href="/user/userSignup">
         Don't Have an Account? Signup!
       </Link>
@@ -92,23 +91,49 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "center",
+    backgroundColor: "#F5F5F5",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 30,
+    color: "#34495E",
   },
   input: {
-    height: 40,
-    borderColor: "grey",
-    marginBottom: 15,
-    paddingHorizontal: 10,
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    backgroundColor: "#FFFFFF",
   },
   link: {
     marginTop: 15,
     textAlign: "center",
-    color: "blue",
+    color: "#34495E",
     textDecorationLine: "underline",
+    fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#34495E",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "#D32F2F",
+    textAlign: "center",
   },
 });

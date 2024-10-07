@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -11,93 +10,50 @@ import {
 } from "react-native";
 import { Header } from "../Header";
 import axios from "axios";
-import { useState, useContext } from "react";
-import { Link } from "expo-router";
-import { UserAccountContext } from "../_layout";
 import { useRouter } from "expo-router";
+import { UserAccountContext } from "../_layout";
 
 const clothes_item = () => {
-  const [userAccount, setUserAccount] = useContext(UserAccountContext);
+  const [userAccount] = useContext(UserAccountContext);
   const [clotheItem, setClotheItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
-=======
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-
-const ClothesItem = () => {
-  const tags = ['category', 'origin', 'color'];
-
-  const handleWearToday = () => {
-    Alert.alert("Marked as Worn", "You are wearing this item today!");
-  };
-
-  return (
-    <View style={styles.container}>
-      <Image
-        style={styles.image}
-        source={{ uri: "https://img.icons8.com/ios/5000/eeeeee/jumper.png" }}
-      />
-      <Text style={styles.name}>Clothes Item Name</Text>
-      
-      <View style={styles.tagContainer}>
-        {tags.map((tag, index) => (
-          <View key={index} style={styles.tag}>
-            <Text style={styles.tagText}>{tag}</Text>
-          </View>
-        ))}
-      </View>
-
-      <Text style={styles.descriptionLabel}>Description:</Text>
-      <Text style={styles.descriptionText}>This is a short description of the item.</Text>
-      <Text style={styles.descriptionText}>Last Worn: 10/08/2024</Text>
-      <Text style={styles.descriptionText}>Wear Frequency: 5</Text>
-
-      <TouchableOpacity style={styles.wearTodayButton} onPress={handleWearToday}>
-        <Text style={styles.buttonText}>Wear Today</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
->>>>>>> main
 
   const router = useRouter();
 
   useEffect(() => {
     axios
-      .get(
-        `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`
-      )
+      .get(`https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`)
       .then((response) => {
         setClotheItem(response.data[0]);
         setIsLoading(false);
       })
       .catch((err) => {
-        setIsError(`Fail to load item. Error is: ---> ${err}`);
+        setIsError(`Fail to load item. Error: ${err}`);
         setIsLoading(false);
       });
   }, [userAccount]);
 
   if (isLoading) {
     return (
-      <View>
-        <Text> Loading </Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   if (isError) {
     return (
-      <View>
-        <Text>{isError}</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{isError}</Text>
       </View>
     );
   }
 
   if (!clotheItem) {
     return (
-      <View>
-        <Text>No such clothing itme!</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No such clothing item!</Text>
       </View>
     );
   }
@@ -110,8 +66,6 @@ const ClothesItem = () => {
     clotheItem.tags.style,
   ];
 
-  
-
   const handleWearToday = () => {
     let newWearUpdate = {
       last_date_worn: new Date().toISOString().split("T")[0],
@@ -122,7 +76,7 @@ const ClothesItem = () => {
         `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`,
         newWearUpdate
       )
-      .then((response) => {
+      .then(() => {
         setClotheItem((prevState) => ({
           ...prevState,
           tags: {
@@ -131,12 +85,10 @@ const ClothesItem = () => {
             wear_frequency: prevState.tags.wear_frequency + 1,
           },
         }));
-        console.log("Success");
-        Alert.alert("Marked as Worn", "You are wearing this item today!");
+        Alert.alert("Success", "You are wearing this item today!");
       })
       .catch((err) => {
-        console.log(err);
-        Alert.alert("Error", "You can't wear this today!");
+        Alert.alert("Error", `You can't wear this today. Error: ${err}`);
       });
   };
 
@@ -151,16 +103,15 @@ const ClothesItem = () => {
     <View style={styles.container}>
       <ScrollView>
         <Header />
-        <Text style={styles.name}>Clothes Item Name</Text>
+        <Text style={styles.name}>{clotheItem.name || "Clothes Item Name"}</Text>
         <Image
           style={styles.image}
           source={{
-            uri: clotheItem.img_url || "Image unavailable",
+            uri: "https://cdn.grube.de/2021/06/14/80-487-01_1_j21_700.jpg",
           }}
         />
         <View style={styles.tagContainer}>
-          {tags.map((tag, index) =>
-          (
+          {tags.map((tag, index) => (
             <View key={index} style={styles.tag}>
               <Text style={styles.tagText}>{tag}</Text>
             </View>
@@ -168,7 +119,7 @@ const ClothesItem = () => {
         </View>
         <Text style={styles.descriptionLabel}>Description:</Text>
         <Text style={styles.descriptionText}>
-          This is a short description of the item.
+          {clotheItem.description || "This is a short description of the item."}
         </Text>
         <Text style={styles.descriptionText}>
           Last Worn: {clotheItem.tags.last_date_worn}
@@ -176,25 +127,22 @@ const ClothesItem = () => {
         <Text style={styles.descriptionText}>
           Wear Frequency: {clotheItem.tags.wear_frequency}
         </Text>
-        <TouchableOpacity
-          style={styles.wearTodayButton}
-          onPress={handleWearToday}
-        >
+        <TouchableOpacity style={styles.wearTodayButton} onPress={handleWearToday}>
           <Text style={styles.buttonText}>Wear Today</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
+        <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
           <Text style={styles.buttonText}>Edit Details</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-<<<<<<< HEAD
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#f8f4f0",
   },
   image: {
     width: 300,
@@ -202,11 +150,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     alignSelf: "center",
+    borderColor: "#ddd",
+    borderWidth: 1,
   },
   name: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    color: "#34495E",
+    color: "#2f3640", 
     marginBottom: 10,
     textAlign: "center",
   },
@@ -214,101 +164,69 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    marginVertical: 10,
+    marginVertical: 15,
   },
   tag: {
-    backgroundColor: "#ddd",
-=======
-    backgroundColor: '#f5f5f5',
-  },
-  image: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#34495E',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
-  tag: {
-    backgroundColor: '#3498db',
->>>>>>> main
+    backgroundColor: "#ececec",
     paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 20,
+    paddingHorizontal: 15,
+    borderRadius: 15,
     marginHorizontal: 5,
     marginBottom: 10,
   },
   tagText: {
-<<<<<<< HEAD
-    color: "#111",
-=======
-    color: '#fff',
->>>>>>> main
+    color: "#2f3640",
     fontSize: 14,
+    fontWeight: "bold",
   },
   descriptionLabel: {
-    fontSize: 18,
-<<<<<<< HEAD
+    fontSize: 20,
     fontWeight: "bold",
     marginVertical: 10,
-    color: "#2C3E50",
+    color: "#2f3640",
   },
   descriptionText: {
     fontSize: 16,
-    color: "#7F8C8D",
-    marginBottom: 5,
+    color: "#7f8c8d",
+    marginBottom: 8,
   },
   wearTodayButton: {
-    backgroundColor: "#111",
-=======
-    fontWeight: 'bold',
-    marginVertical: 10,
-    color: '#2C3E50',
-  },
-  descriptionText: {
-    fontSize: 16,
-    color: '#7F8C8D',
-    marginBottom: 5,
-  },
-  wearTodayButton: {
-    backgroundColor: '#1E8449',
->>>>>>> main
+    backgroundColor: "#2f3640", 
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
+    alignItems: "center",
+  },
+  editButton: {
+    backgroundColor: "#2f3640", 
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 15,
+    alignItems: "center",
   },
   buttonText: {
-<<<<<<< HEAD
     color: "#fff",
     fontSize: 18,
-    textAlign: "center",
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 20,
+    color: "#2f3640",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 20,
+    color: "#e74c3c", 
   },
 });
 
 export default clothes_item;
-
-// 1. handle wear today => patch wear freqency and last_date_worn
-// 2. handle edit => edit page => gives user access details to edit
-// 3. edit page will have submit button => Patch and update the clothes item
-=======
-    color: '#fff',
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-});
-
-export default ClothesItem;
->>>>>>> main

@@ -1,25 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
   Image,
   StyleSheet,
-  TouchableOpacity,
-  Alert,
   TextInput,
+  TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
-import { Header } from "../Header";
 import axios from "axios";
-import { useState, createContext, useContext } from "react";
-import { Link } from "expo-router";
-import { UserAccountContext } from "../_layout";
 import { useRouter } from "expo-router";
+import { Header } from "../Header";
+import { UserAccountContext } from "../_layout";
 
-const editClothesItem = () => {
+const EditClothesItem = () => {
   const [userAccount] = useContext(UserAccountContext);
   const [clotheItem, setClotheItem] = useState(null);
-  const [top_category, setTopCategory] = useState("");
+  const [topCategory, setTopCategory] = useState("");
   const [category, setCategory] = useState("");
   const [color, setColor] = useState("");
 
@@ -27,41 +25,27 @@ const editClothesItem = () => {
   const [isError, setIsError] = useState(null);
 
   const router = useRouter();
-  // const { item_id } = router.query;
 
-  // if (!item_id) {
-  //   return <Text> No item id to edit </Text>;
-  // }
-
-  // console.log(item_id);w
-
-  useEffect(
-    () => {
-      // if (item_id) {
-      axios
-        .get(
-          `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`
-        )
-        .then((response) => {
-          const item = response.data[0];
-          setClotheItem(item);
-          setTopCategory(item.top_category);
-          setCategory(item.category);
-          setColor(item.color);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          setIsError(`Fail to load item. Error is: ---> ${err}`);
-          setIsLoading(false);
-        });
-    },
-    // }
-    [userAccount]
-  );
+  useEffect(() => {
+    axios
+      .get(`https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`)
+      .then((response) => {
+        const item = response.data[0];
+        setClotheItem(item);
+        setTopCategory(item.top_category);
+        setCategory(item.category);
+        setColor(item.color);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsError(`Failed to load item. Error: ${err}`);
+        setIsLoading(false);
+      });
+  }, [userAccount]);
 
   const handleSubmitEdit = () => {
-    let newDetails = {
-      top_category: top_category,
+    const newDetails = {
+      top_category: topCategory,
       category: category,
       color: color,
     };
@@ -71,107 +55,91 @@ const editClothesItem = () => {
         `https://swagswapp-api.onrender.com/api/clothes/${userAccount.user_id}/3`,
         newDetails
       )
-      .then((response) => {
-        console.log(response.data, "submit responds");
-        // setClotheItem((prevState) => ({
-        //   ...prevState,
-        //   top_category: newDetails.top_category,
-        //   category: newDetails.category,
-        //   color: newDetails.color,
-        // }));
-        console.log("Success");
-        Alert.alert("Success!", "Clothes updated!");
+      .then(() => {
+        Alert.alert("Success!", "Clothes updated successfully.");
         router.push("/clothes/clothes_item");
       })
       .catch((err) => {
-        console.log(err);
-        Alert.alert("Error", "You can't wear this today!");
+        Alert.alert("Error", `Failed to update clothes. Error: ${err}`);
       });
   };
 
   if (isLoading) {
     return (
-      <View>
-        <Text> Loading </Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   if (isError) {
     return (
-      <View>
-        <Text>{isError}</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{isError}</Text>
       </View>
     );
   }
 
-  console.log(clotheItem, "hhhh");
-
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <Header />
-        <Text style={styles.name}>Editing Details</Text>
-        <Image
-          style={styles.image}
-          source={{
-            uri: clotheItem.img_url || "Image unavialble",
-          }}
+    <ScrollView style={styles.container}>
+      <Header />
+      <Text style={styles.name}>Editing Details</Text>
+      <Image
+        style={styles.image}
+        source={{
+          uri: "https://cdn.grube.de/2021/06/14/80-487-01_1_j21_700.jpg",
+        }}
+      />
+      <Text style={styles.descriptionLabel}>Description:</Text>
+      <Text style={styles.descriptionText}>
+        {clotheItem.description || "This is a short description of the item."}
+      </Text>
+
+      <View style={styles.inputRow}>
+        <Text style={styles.label}>Top Category:</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder={`Top Category: ${clotheItem.top_category}`}
+          value={topCategory}
+          onChangeText={setTopCategory}
         />
-        <View style={styles.tagContainer}>
-          <Text style={styles.descriptionLabel}>Description:</Text>
-        </View>
-        <Text style={styles.descriptionLabel}>Description:</Text>
-        <Text style={styles.descriptionText}>
-          This is a short description of the item.
-        </Text>
+      </View>
 
-        <Text style={styles.text}>
-          Top Category:
-          <TextInput
-            style={styles.textInput}
-            placeholder={`top_category: ${clotheItem.top_category}`}
-            value={top_category}
-            onChangeText={setTopCategory}
-          />
-        </Text>
-
-        <Text style={styles.text}>Category:</Text>
+      <View style={styles.inputRow}>
+        <Text style={styles.label}>Category:</Text>
         <TextInput
           style={styles.textInput}
           placeholder={clotheItem.category}
           value={category}
           onChangeText={setCategory}
         />
+      </View>
 
-        <Text style={styles.text}>
-          Color:
-          <TextInput
-            style={styles.textInput}
-            placeholder={clotheItem.color}
-            value={color}
-            onChangeText={setColor}
-          />
-        </Text>
+      <View style={styles.inputRow}>
+        <Text style={styles.label}>Color:</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder={clotheItem.color}
+          value={color}
+          onChangeText={setColor}
+        />
+      </View>
 
-        <Text style={styles.descriptionText}>
-          Wear Frequency: {clotheItem.tags.wear_frequency}
-        </Text>
-        <TouchableOpacity
-          style={styles.wearTodayButton}
-          onPress={handleSubmitEdit}
-        >
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+      <Text style={styles.descriptionText}>
+        Wear Frequency: {clotheItem.tags.wear_frequency}
+      </Text>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmitEdit}>
+        <Text style={styles.buttonText}>Submit Changes</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#f8f4f0", 
   },
   image: {
     width: 300,
@@ -179,68 +147,76 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     alignSelf: "center",
+    borderColor: "#ddd",
+    borderWidth: 1,
   },
   name: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    color: "#34495E",
+    color: "#2f3640", 
     marginBottom: 10,
     textAlign: "center",
   },
-  tagContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  tag: {
-    backgroundColor: "#ddd",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    marginHorizontal: 5,
-    marginBottom: 10,
-  },
-  tagText: {
-    color: "#111",
-    fontSize: 14,
-  },
   descriptionLabel: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     marginVertical: 10,
-    color: "#2C3E50",
+    color: "#2f3640",
   },
   descriptionText: {
     fontSize: 16,
-    color: "#7F8C8D",
-    marginBottom: 5,
+    color: "#7f8c8d",
+    marginBottom: 8,
   },
-  wearTodayButton: {
-    backgroundColor: "#111",
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    justifyContent: "space-between",
+  },
+  label: {
+    fontSize: 16,
+    color: "#2f3640",
+    width: "30%",
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+    width: "65%",
+  },
+  submitButton: {
+    backgroundColor: "#2f3640",
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
-    textAlign: "center",
     fontWeight: "bold",
   },
-  text: {
-    fontSize: 16,
-    color: "#7F8C8D",
-    marginRight: 10,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-
-  textInput: {
-    borderWidth: 2,
-    borderColor: "#777",
-    padding: 8,
-    margin: 10,
-    width: 200,
+  loadingText: {
+    fontSize: 20,
+    color: "#2f3640",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 20,
+    color: "#e74c3c",
   },
 });
 
-export default editClothesItem;
+export default EditClothesItem;
