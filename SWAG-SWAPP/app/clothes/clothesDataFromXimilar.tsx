@@ -34,3 +34,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+<<<<<<< HEAD
+=======
+
+// Get hold of the single clothe id which is item_id.
+//useEffect to fetch the item through query database
+//Extract the datas from our database and Ximilar Api to be able to design our page
+//Design the page with the data.
+
+//This page will get hold of the data from API and dispaly properly.
+//2 Pages
+//1 from the Ximilar API and
+//2 from the main main page ---> when a user clicks an item in the page.
+//
+>>>>>>> 6973a0d (in progress)

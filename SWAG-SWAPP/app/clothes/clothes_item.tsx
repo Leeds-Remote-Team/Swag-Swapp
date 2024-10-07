@@ -208,9 +208,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+<<<<<<< HEAD
 
 export default clothes_item;
 
 // 1. handle wear today => patch wear freqency and last_date_worn
 // 2. handle edit => edit page => gives user access details to edit
 // 3. edit page will have submit button => Patch and update the clothes item
+=======
+>>>>>>> 6973a0d (in progress)
