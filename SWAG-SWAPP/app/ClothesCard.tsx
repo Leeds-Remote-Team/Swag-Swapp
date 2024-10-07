@@ -2,6 +2,7 @@ import React from "react";
 import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export const ClothesCard = ({ title, image }) => {
+  console.log(image);
   return (
     <View style={styles.section}>
       <TouchableOpacity>
