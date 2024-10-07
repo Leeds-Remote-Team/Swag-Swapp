@@ -26,14 +26,14 @@ const clothes_item = () => {
   useEffect(() => {
     axios
       .get(
-        `https://swagswapp-api.onrender.com/api/clothes/20/${userAccount.user_id}`
+        `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`
       )
       .then((response) => {
         setClotheItem(response.data[0]);
         setIsLoading(false);
       })
       .catch((err) => {
-        setIsError(`Fail to load. Error is: ---> ${err}`);
+        setIsError(`Fail to load item. Error is: ---> ${err}`);
         setIsLoading(false);
       });
   }, [userAccount]);
@@ -77,7 +77,7 @@ const clothes_item = () => {
     };
     axios
       .patch(
-        `https://swagswapp-api.onrender.com/api/clothes/20/${userAccount.user_id}`,
+        `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`,
         newWearUpdate
       )
       .then((response) => {
@@ -101,7 +101,7 @@ const clothes_item = () => {
   const handleEdit = () => {
     router.push({
       pathname: "/clothes/editClothesItem",
-      state: { clotheItem },
+      params: { item_id: clotheItem.item_id },
     });
   };
 
@@ -113,7 +113,7 @@ const clothes_item = () => {
         <Image
           style={styles.image}
           source={{
-            uri: clotheItem.img_url,
+            uri: clotheItem.img_url || "Image unavailable",
           }}
         />
         <View style={styles.tagContainer}>

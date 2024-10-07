@@ -16,56 +16,49 @@ import { UserAccountContext } from "../_layout";
 import { useRouter } from "expo-router";
 
 const editClothesItem = () => {
-  //   const userAccount = useContext(UserAccountContext);
-
-  const router = useRouter();
-  const { clotheItem } = router.state || {};
-
-  if (!clotheItem) {
-    return <Text> No item to edit </Text>;
-  }
-
-  const [top_category, setTopCategory] = useState(clotheItem.top_category);
-  const [category, setCategory] = useState(clotheItem.category);
-  const [color, setColor] = useState(clotheItem.color);
+  const [userAccount] = useContext(UserAccountContext);
+  const [clotheItem, setClotheItem] = useState(null);
+  const [top_category, setTopCategory] = useState("");
+  const [category, setCategory] = useState("");
+  const [color, setColor] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
-  const today = new Date();
 
-  if (isLoading) {
-    return (
-      <View>
-        <Text> Loading </Text>
-      </View>
-    );
-  }
+  const router = useRouter();
+  // const { item_id } = router.query;
 
-  if (isError) {
-    return (
-      <View>
-        <Text>{isError}</Text>
-      </View>
-    );
-  }
+  // if (!item_id) {
+  //   return <Text> No item id to edit </Text>;
+  // }
 
-  if (!clotheItem) {
-    return (
-      <View>
-        <Text>No such clothing itme!</Text>
-      </View>
-    );
-  }
+  // console.log(item_id);
 
-  const tags = [
-    clotheItem.top_category,
-    clotheItem.category,
-    clotheItem.color,
-    clotheItem.tags.sleeves,
-    clotheItem.tags.style,
-  ];
+  useEffect(
+    () => {
+      // if (item_id) {
+      axios
+        .get(
+          `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`
+        )
+        .then((response) => {
+          const item = response.data[0];
+          setClotheItem(item);
+          setTopCategory(item.top_category);
+          setCategory(item.category);
+          setColor(item.color);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsError(`Fail to load item. Error is: ---> ${err}`);
+          setIsLoading(false);
+        });
+    },
+    // }
+    [userAccount]
+  );
 
-  const handleEdit = () => {
+  const handleSubmitEdit = () => {
     let newDetails = {
       top_category: top_category,
       category: category,
@@ -74,7 +67,7 @@ const editClothesItem = () => {
 
     axios
       .patch(
-        `https://swagswapp-api.onrender.com/api/clothes/${id}/1`,
+        `https://swagswapp-api.onrender.com/api/clothes/3/${userAccount.user_id}`,
         newDetails
       )
       .then((response) => {
@@ -94,6 +87,22 @@ const editClothesItem = () => {
       });
   };
 
+  if (isLoading) {
+    return (
+      <View>
+        <Text> Loading </Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View>
+        <Text>{isError}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Header />
@@ -101,13 +110,11 @@ const editClothesItem = () => {
       <Image
         style={styles.image}
         source={{
-          uri: "https://uhqkbcxmjnqjhwbmupzq.supabase.co/storage/v1/object/public/ClothingImages/public/1727434604611.jpg",
+          uri: clotheItem.image_url || "Image unavialble",
         }}
       />
       <View style={styles.tagContainer}>
-        <Text style={styles.descriptionLabel} placeholder={cloth}>
-          Description:
-        </Text>
+        <Text style={styles.descriptionLabel}>Description:</Text>
       </View>
       <Text style={styles.descriptionLabel}>Description:</Text>
       <Text style={styles.descriptionText}>
@@ -116,33 +123,29 @@ const editClothesItem = () => {
       <TextInput
         style={styles.descriptionText}
         placeholder={clotheItem.top_category}
-        value={clotheItem.top_category}
+        value={top_category}
         onChangeText={setTopCategory}
       />
       <TextInput
         style={styles.descriptionText}
-        placeholder={clotheItem.top_category}
-        value={clotheItem.top_category}
-        onChangeText={setTopCategory}
+        placeholder={clotheItem.category}
+        value={category}
+        onChangeText={setCategory}
       />
       <TextInput
         style={styles.descriptionText}
-        placeholder={clotheItem.top_category}
-        value={clotheItem.top_category}
-        onChangeText={setTopCategory}
+        placeholder={clotheItem.color}
+        value={color}
+        onChangeText={setColor}
       />
-
       <Text style={styles.descriptionText}>
         Wear Frequency: {clotheItem.tags.wear_frequency}
       </Text>
       <TouchableOpacity
         style={styles.wearTodayButton}
-        onPress={handleWearToday}
+        onPress={handleSubmitEdit}
       >
-        <Text style={styles.buttonText}>Wear Today</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.wearTodayButton} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Edit Details</Text>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   );
@@ -210,4 +213,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// export default clothes_item;
+export default editClothesItem;
