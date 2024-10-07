@@ -1,24 +1,13 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-export const ClothesCard = ({ title }) => {
+export const ClothesCard = ({ title, image }) => {
   return (
     <View style={styles.section}>
-      <Text style={styles.title}>{title}</Text>
-      <ScrollView horizontal>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-        <View style={styles.cardPlaceholder}></View>
-      </ScrollView>
+      <TouchableOpacity>
+        <Image source={image} style={styles.cardPlaceholder} />
+        <Text style={styles.title}>{title}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
