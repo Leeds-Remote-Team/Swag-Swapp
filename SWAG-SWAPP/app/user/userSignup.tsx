@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Image,
@@ -8,15 +8,21 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { useState } from "react";
-import { Link } from "expo-router";
+import axios from "axios";
+import { Link, Redirect } from "expo-router";
+import { useState, useContext } from "react";
 import { useRouter } from "expo-router";
+import { UserAccountContext } from "../_layout";
 
 export default function userSignup() {
-  const [firstNameText, setFirstNameText] = useState("");
-  const [lastNameText, setLastNameText] = useState("");
   const [userNameText, setUserNameText] = useState("");
   const [passwordText, setPasswordText] = useState("");
+  const [firstNameText, setFirstNameText] = useState("");
+  const [lastNameText, setLastNameText] = useState("");
+  const [userAccount, setUserAccount] = useContext(UserAccountContext);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
 
   const router = useRouter();
 
@@ -26,10 +32,32 @@ export default function userSignup() {
       console.log("Error");
       return;
     }
+    let newUser = {
+      username: userNameText,
+      first_name: firstNameText,
+      last_name: lastNameText,
+      password: passwordText,
+    };
+    setIsLoading(true);
+    axios
+      .post(`https://swagswapp-api.onrender.com/api/users`, newUser)
+      .then((response) => {
+        console.log(response);
+        setUserAccount(newUser);
+        console.log("New User Crated :", userAccount);
+        Alert.alert("Success", "Enjoy SwagSwapping! Start adding your clothes");
+        router.push("/camera/camera");
+      })
 
-    // Alert.alert("Success!", "You've created your account!");
-    console.log("Success");
-    router.push("/Dashboard");
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        setIsError(`Fail to create New User. Error is: ${err}`);
+        Alert.alert(
+          "Error",
+          "Account Creation Failed, Reported to our engineers"
+        );
+      });
   };
 
   console.log(firstNameText, lastNameText, userNameText, passwordText);
