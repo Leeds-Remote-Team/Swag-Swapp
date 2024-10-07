@@ -21,6 +21,5 @@ export const fetchNeedsSomeLovingClothes = (user_id) => {
 };
 
 export const fetchNewestClothes = (user_id) => {
-  console.log("hello, lokking for me")
   return fetchSortedClothes("last_date_worn", "desc", user_id);
 };

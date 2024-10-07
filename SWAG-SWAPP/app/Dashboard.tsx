@@ -44,7 +44,6 @@ const Dashboard = () => {
 
     fetchNewestClothes(user_id)
       .then((newClothes) => {
-        console.log("Newest Clothes:", newClothes);
         setNewest(newClothes);
       })
       .catch(() => {
