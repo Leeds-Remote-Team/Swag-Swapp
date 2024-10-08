@@ -67,14 +67,14 @@ export default function newItem() {
     <View>
       <View style={styles.container}>
         <Image style={styles.image} source={postImage} />
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           placeholder="Enter name of item..."
           value={clothesName}
           onChangeText={setClothesName}
-        />
+        /> */}
 
-        <View style={styles.tagContainer}>
+        {/* <View style={styles.tagContainer}>
           {tagKeys.map((tag, index) => (
             <View key={index} style={styles.tag}>
               <Text style={styles.tagText}>
@@ -82,7 +82,7 @@ export default function newItem() {
               </Text>
             </View>
           ))}
-        </View>
+        </View> */}
 
         <Text style={styles.descriptionLabel}>Description:</Text>
         <Text style={styles.descriptionText}>
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   image: {
-    width: "100%",
-    height: 500,
+    width: 300,
+    height: 300,
     borderRadius: 10,
     marginBottom: 20,
   },
